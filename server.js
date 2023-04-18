@@ -1,80 +1,113 @@
+// The getMeetingRoomUrl() function is defined to fetch the meeting room URL from 
+// the Whereby API using the new REST API. 
+// The function is then called in the app.post('/meetings') route to 
+// get the room URL before creating a new meeting in the database.
+
+// It should work as long as you replace YOUR_API_KEY 
+
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const User = require('./user.model');
+const fetch = require("cross-fetch");
 
 const app = express();
-const PORT = 3030;
+app.use(express.json());
 
 // Connect to MongoDB
-//mongoose.connect('mongodb://localhost:27017/whereby', { useNewUrlParser: true });
-mongoose.connect('mongodb://127.0.0.1/whereby');
+mongoose.connect('mongodb://localhost:27017/meetingapp', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
 
-// Set up middleware
-app.use(bodyParser.json());
+// Define meeting schema
+const meetingSchema = new mongoose.Schema({
+  title: String,
+  startDate: Date,
+  endDate: Date,
+  host: String,
+  participants: [String]
+});
 
-// Create a new user
-app.post('/users', async (req, res) => {
+// Create meeting model
+const Meeting = mongoose.model('Meeting', meetingSchema);
+
+// API key for Whereby
+const API_KEY = "YOUR_API_KEY";
+
+// Function to fetch meeting room URL from Whereby API
+async function getMeetingRoomUrl() {
+  const data = {
+    endDate: "2099-02-18T14:23:00.000Z",
+    fields: ["hostRoomUrl"],
+  };
+  const response = await fetch("https://api.whereby.dev/v1/meetings", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const json = await response.json();
+  return json.hostRoomUrl;
+}
+
+// Route to create a new meeting
+app.post('/meetings', async (req, res) => {
   try {
-    const { name, email } = req.body;
-    const user = new User({ name, email });
-    await user.save();
-    res.json(user);
+    // Get meeting room URL from Whereby API
+    const roomUrl = await getMeetingRoomUrl();
+    
+    // Create new meeting
+    const meeting = new Meeting({
+      title: req.body.title,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      host: req.body.host,
+      participants: req.body.participants,
+      roomUrl: roomUrl
+    });
+
+    // Save meeting to database
+    await meeting.save();
+
+    // Return success response
+    res.status(201).json({
+      message: 'Meeting created successfully',
+      data: meeting
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({
+      message: 'Internal server error'
+    });
   }
 });
 
-// Get a list of all users
-app.get('/users', async (req, res) => {
+// Route to get all meetings
+app.get('/meetings', async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    // Find all meetings in the database
+    const meetings = await Meeting.find();
+
+    // Return success response
+    res.status(200).json({
+      message: 'Meetings retrieved successfully',
+      data: meetings
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({
+      message: 'Internal server error'
+    });
   }
 });
 
-// Get a single user by ID
-app.get('/users/:id', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) throw new Error('User not found');
-    res.json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+// Start server
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
 });
-
-// Update a user by ID
-app.put('/users/:id', async (req, res) => {
-  try {
-    const { name, email } = req.body;
-    const user = await User.findByIdAndUpdate(req.params.id,
-
-    { name, email },
-    { new: true }
-  );
-  if (!user) throw new Error('User not found');
-  res.json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Delete a user by ID
-app.delete('/users/:id', async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) throw new Error('User not found');
-    res.json({ message: 'User deleted successfully' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
