@@ -7,7 +7,8 @@ const app = express();
 const PORT = 3030;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost/whereby', { useNewUrlParser: true });
+//mongoose.connect('mongodb://localhost:27017/whereby', { useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1/whereby');
 
 // Set up middleware
 app.use(bodyParser.json());
