@@ -1,0 +1,26 @@
+{
+  "name": "whereby",
+  "version": "1.0.0",
+  "description": "Whereby-API for intergrating with Chatswap Mobile Application",
+  "main": "server.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gtindi/whereby-api.git"
+  },
+  "keywords": [
+    "whereby"
+  ],
+  "author": "Gabriel Tindi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gtindi/whereby-api/issues"
+  },
+  "homepage": "https://github.com/Gtindi/whereby-api#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.4"
+  }
+}
