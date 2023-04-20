@@ -1,4 +1,4 @@
-<h1> Whereby API</h1>1>
+<h1> Whereby API</h1>
 The code is a Node.js application that creates a RESTful API for managing meetings. It defines a few routes for creating and retrieving meetings using MongoDB for persistence and the Whereby API for generating unique meeting room URLs.
 
 Here is a brief overview of what the code does:
