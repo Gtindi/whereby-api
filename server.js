@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/meetingapp', {
+mongoose.connect('mongodb://127.0.0.1:27017/meetingapp', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -108,6 +108,6 @@ app.get('/meetings', async (req, res) => {
 });
 
 // Start server
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
+app.listen(3030, () => {
+  console.log('Server started on port 3030');
 });

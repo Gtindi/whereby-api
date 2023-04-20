@@ -18,3 +18,15 @@ In the route handler, use the find() method of the Meeting model to retrieve all
 Return a success response with the retrieved meetings array and HTTP status 200
 Start the server on port 3000 and listen for incoming requests
 It's important to note that the code requires replacing "YOUR_API_KEY" with a valid API key for the Whereby API.
+
+
+The endpoint for the front-end developer to retrieve the meeting room URL for a specific meeting by its ID is:
+`GET /meetings/:id/roomUrl`
+
+The :id parameter in the endpoint should be replaced with the ID of the meeting for which the room URL is being retrieved.
+For example, if the ID of the meeting is 1234, the endpoint to retrieve the meeting room URL would be:
+`GET /meetings/1234/roomUrl`
+
+When the front-end developer sends a GET request to this endpoint, the backend server will find the meeting with the specified ID in the database, 
+retrieve its room URL, and return it in the response as a JSON object with the key roomUrl. 
+The front-end developer can then use this URL to start the Whereby video conference.

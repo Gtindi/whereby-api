@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Gtindi/whereby-api#readme",
   "dependencies": {
+    "cross-fetch": "^3.1.5",
     "express": "^4.18.2",
     "mongodb": "^5.2.0",
     "mongoose": "^7.0.4"
