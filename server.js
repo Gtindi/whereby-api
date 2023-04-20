@@ -107,6 +107,24 @@ app.get('/meetings', async (req, res) => {
   }
 });
 
+// Route to get a specific meeting by ID and return its room URL
+app.get('/meetings/:id/roomUrl', async (req, res) => {
+  try {
+    // Find the meeting in the database by its ID
+    const meeting = await Meeting.findById(req.params.id);
+
+    // Return the meeting room URL
+    res.status(200).json({
+      roomUrl: meeting.roomUrl
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Start server
 app.listen(3030, () => {
   console.log('Server started on port 3030');
